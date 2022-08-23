@@ -1,0 +1,204 @@
+
+<!DOCTYPE HTML><html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    body {
+        height: 800px;
+        margin: 20px;
+      background-color: white;
+    }
+    h2{
+      font-family: Arial;
+      font-size: 2.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>ANXIOM 3000</h2>
+  <div style = "width: 2000px;transform: translate(0%,5%);">
+    <div id="chart-Heart Rate" class="container" style = "float: left; width: 620px;"></div>
+    <div id="chart-Acceleration" class="container" style = "float: left; width: 620px;"></div>
+    <div id="chart-GSR" class="container" style = "width: 620px;"></div>
+    <div id="status-Acceleration" class="container" style = "text-align: center; font-size: 25px;transform: translate(8%,-1350%);"></div> 
+    <div id="BPM-heartrate" class="container" style = "text-align: center;font-size: 25px; transform: translate(-22%,-1450%);;"></div> 
+    <div id="Anxiom" class="container" style = "text-align: center;font-size: 80px; transform: translate(-4%,100%);;"></div> 
+  </div>
+</body>
+<script>
+
+//heart rate
+var chartH = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-Heart Rate' },
+  title: { text: 'Heart Rate' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: true,
+      dataLabels: { enabled: false }
+    },
+    series: { color: '#db0404' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'BPM' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      console.log(this.responseText);
+      if(chartH.series[0].data.length > 40) {
+        chartH.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartH.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/heartrate", true);
+  xhttp.send();
+}, 800 ) ;
+
+//---------
+
+//acceleration
+var chartT = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-Acceleration' },
+  title: { text: 'Acceleration' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: false }
+    },
+    series: { color: '#000000' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Amplitude' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      console.log(this.responseText);
+      if(chartT.series[0].data.length > 40) {
+        chartT.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartT.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/acceleration", true);
+  xhttp.send();
+}, 800 ) ;
+
+//state
+let status = ' '
+let mydiv = document.getElementById('status-Acceleration');
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      status = this.responseText;
+      console.log(this.responseText);
+      mydiv.innerHTML = status;
+    }
+  };
+  xhttp.open("GET", "/state", true);
+  xhttp.send();
+}, 800 ) ;
+
+//GSR
+var chartG = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-GSR' },
+  title: { text: 'GSR' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#4c04db' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: ' GSR Amplitude' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      console.log(this.responseText);
+      if(chartG.series[0].data.length > 40) {
+        chartG.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartG.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/GSR", true);
+  xhttp.send();
+}, 800 ) ;
+
+//BPM
+let BPM = ' '
+let mydiv1 = document.getElementById('BPM-heartrate');
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      status = this.responseText;
+      console.log(this.responseText);
+      mydiv1.innerHTML = status;
+    }
+  };
+  xhttp.open("GET", "/BPM", true);
+  xhttp.send();
+}, 800 ) ;
+
+//Anxiom
+let ANX = ' '
+let mydiv2 = document.getElementById('Anxiom');
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      status = this.responseText;
+      console.log(this.responseText);
+      mydiv2.innerHTML = status;
+    }
+  };
+  xhttp.open("GET", "/Anxiom", true);
+  xhttp.send();
+}, 800 ) ;
+
+//--------------
+</script>
+</html>
